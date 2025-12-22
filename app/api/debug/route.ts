@@ -7,7 +7,29 @@ export async function GET() {
   try {
     // 環境変数チェック
     const hasPostgresUrl = !!process.env.POSTGRES_URL;
-    const postgresUrlPrefix = process.env.POSTGRES_URL?.substring(0, 30) || 'NOT_SET';
+    const originalUrl = process.env.POSTGRES_URL?.substring(0, 50) || 'NOT_SET';
+
+    // 変換後の接続文字列を取得
+    let transformedUrl = 'NOT_TRANSFORMED';
+    if (process.env.POSTGRES_URL) {
+      let connectionString = process.env.POSTGRES_URL;
+      if (connectionString.startsWith('postgres://') && !connectionString.startsWith('postgresql://')) {
+        connectionString = connectionString.replace('postgres://', 'postgresql://');
+      }
+      if (connectionString.includes(':5432/')) {
+        connectionString = connectionString
+          .replace(/db\.([a-zA-Z0-9]+)\.supabase\.co:5432/, 'aws-1-ap-northeast-1.pooler.supabase.com:6543')
+          .replace(/:5432\//, ':6543/');
+        const projectIdMatch = connectionString.match(/pooler\.supabase\.com/);
+        if (projectIdMatch) {
+          connectionString = connectionString.replace(
+            /postgresql:\/\/postgres:/,
+            'postgresql://postgres.bgfqbfhlzyvbtrigxurc:'
+          );
+        }
+      }
+      transformedUrl = connectionString.substring(0, 70);
+    }
 
     // データベース接続テスト
     let dbConnectionTest = 'NOT_TESTED';
@@ -44,7 +66,8 @@ export async function GET() {
     return NextResponse.json({
       environment: {
         hasPostgresUrl,
-        postgresUrlPrefix,
+        originalUrl,
+        transformedUrl,
       },
       database: {
         connectionTest: dbConnectionTest,

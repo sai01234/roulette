@@ -3,9 +3,33 @@ import { Tournament, Participant, TournamentData } from './types';
 
 // Neon serverless SQL client
 function getSql() {
-  // POSTGRES_URLが設定されている場合はそれを使用
+  // POSTGRES_URLが設定されている場合
   if (process.env.POSTGRES_URL) {
-    return neon(process.env.POSTGRES_URL);
+    let connectionString = process.env.POSTGRES_URL;
+
+    // postgres:// を postgresql:// に変換（Vercelストレージ統合の問題を修正）
+    if (connectionString.startsWith('postgres://') && !connectionString.startsWith('postgresql://')) {
+      connectionString = connectionString.replace('postgres://', 'postgresql://');
+    }
+
+    // Session Poolerが必要（ポート6543）、Direct connection（ポート5432）の場合は変換
+    if (connectionString.includes(':5432/')) {
+      // ホストとポートをSession Pooler用に変換
+      connectionString = connectionString
+        .replace(/db\.([a-zA-Z0-9]+)\.supabase\.co:5432/, 'aws-1-ap-northeast-1.pooler.supabase.com:6543')
+        .replace(/:5432\//, ':6543/');
+
+      // ユーザー名も変更（postgres → postgres.PROJECT_ID）
+      const projectIdMatch = connectionString.match(/pooler\.supabase\.com/);
+      if (projectIdMatch) {
+        connectionString = connectionString.replace(
+          /postgresql:\/\/postgres:/,
+          'postgresql://postgres.bgfqbfhlzyvbtrigxurc:'
+        );
+      }
+    }
+
+    return neon(connectionString);
   }
 
   // Vercelストレージ統合の場合、Session Pooler URLを構築
