@@ -1,0 +1,176 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Participant } from '@/lib/types';
+
+interface WinnerCelebrationProps {
+  winner: Participant;
+  onClose: () => void;
+}
+
+// 紙吹雪のパーティクル
+const Confetti = ({ delay }: { delay: number }) => {
+  const colors = ['#ff3366', '#00ffcc', '#ffd700', '#9333ea', '#3b82f6'];
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  const randomX = Math.random() * 100;
+  const randomDuration = 2 + Math.random() * 2;
+
+  return (
+    <motion.div
+      initial={{ 
+        x: `${randomX}vw`, 
+        y: -20, 
+        rotate: 0,
+        opacity: 1 
+      }}
+      animate={{ 
+        y: '110vh', 
+        rotate: 720,
+        opacity: 0 
+      }}
+      transition={{ 
+        duration: randomDuration, 
+        delay,
+        ease: 'linear'
+      }}
+      className="fixed w-3 h-3 rounded-sm pointer-events-none z-50"
+      style={{ backgroundColor: randomColor }}
+    />
+  );
+};
+
+export default function WinnerCelebration({ winner, onClose }: WinnerCelebrationProps) {
+  const [confetti, setConfetti] = useState<number[]>([]);
+
+  useEffect(() => {
+    // 紙吹雪を生成
+    const particles: number[] = [];
+    for (let i = 0; i < 50; i++) {
+      particles.push(i * 0.1);
+    }
+    setConfetti(particles);
+
+    // 自動で閉じる（オプション）
+    // const timer = setTimeout(onClose, 10000);
+    // return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center"
+      >
+        {/* 紙吹雪 */}
+        {confetti.map((delay, i) => (
+          <Confetti key={i} delay={delay} />
+        ))}
+
+        {/* 背景オーバーレイ */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 bg-black/90 backdrop-blur-md"
+          onClick={onClose}
+        />
+
+        {/* メインコンテンツ */}
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ 
+            type: 'spring', 
+            damping: 15, 
+            stiffness: 100,
+            delay: 0.2
+          }}
+          className="relative z-10 text-center p-12"
+        >
+          {/* 光のエフェクト */}
+          <motion.div
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.5, 0.8, 0.5]
+            }}
+            transition={{ 
+              duration: 2, 
+              repeat: Infinity,
+              ease: 'easeInOut'
+            }}
+            className="absolute inset-0 bg-gradient-radial from-cyber-gold/30 to-transparent rounded-full blur-3xl"
+          />
+
+          {/* トロフィー */}
+          <motion.div
+            animate={{ 
+              y: [0, -10, 0],
+              rotateY: [0, 360]
+            }}
+            transition={{ 
+              y: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+              rotateY: { duration: 4, repeat: Infinity, ease: 'linear' }
+            }}
+            className="text-8xl mb-6"
+            style={{ perspective: '1000px' }}
+          >
+            🏆
+          </motion.div>
+
+          {/* タイトル */}
+          <motion.h1
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="font-display text-5xl md:text-7xl mb-4"
+          >
+            <span className="bg-gradient-to-r from-cyber-gold via-yellow-300 to-cyber-gold bg-clip-text text-transparent">
+              CHAMPION
+            </span>
+          </motion.h1>
+
+          {/* 勝者名 */}
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.7 }}
+          >
+            <p className="font-display text-3xl md:text-5xl text-white mb-4">
+              {winner.name}
+            </p>
+            <p className="font-body text-xl text-cyber-accent2">
+              最終獲得枠数: <span className="font-display text-2xl text-cyber-gold">{winner.frames}</span>
+            </p>
+          </motion.div>
+
+          {/* メッセージ */}
+          <motion.p
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="mt-8 font-display text-xl text-cyber-accent"
+          >
+            🎊 最強管理者権限獲得 🎊
+          </motion.p>
+
+          {/* 閉じるボタン */}
+          <motion.button
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1.1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onClose}
+            className="mt-8 px-8 py-3 rounded-lg bg-gradient-to-r from-cyber-gold to-yellow-500 
+              text-black font-display text-lg shadow-lg shadow-cyber-gold/30"
+          >
+            閉じる
+          </motion.button>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
