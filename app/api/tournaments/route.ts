@@ -3,6 +3,8 @@ import { isAuthenticated } from '@/lib/auth';
 import { getAllTournaments, createTournament, initDatabase } from '@/lib/db';
 import { Participant, TournamentData } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 // GET - 全トーナメント取得
 export async function GET() {
   try {

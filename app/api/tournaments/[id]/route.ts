@@ -3,6 +3,8 @@ import { isAuthenticated } from '@/lib/auth';
 import { getTournamentById, updateTournament } from '@/lib/db';
 import { TournamentData, Participant } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 // GET - 特定のトーナメント取得
 export async function GET(
   request: NextRequest,
