@@ -58,3 +58,21 @@ export interface RouletteResult {
   rotation: number;
 }
 
+// トーナメント（複数管理用）
+export interface Tournament {
+  id: string;
+  name: string;
+  createdAt: string;
+  completedAt: string | null;
+  format: TournamentFormat;
+  totalParticipants: number;
+  winnerData: Participant | null;
+  tournamentData: TournamentData;
+  participants: Participant[];
+}
+
+// セッションデータ
+export interface SessionData {
+  isLoggedIn: boolean;
+}
+
