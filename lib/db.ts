@@ -3,10 +3,34 @@ import { Tournament, Participant, TournamentData } from './types';
 
 // Neon serverless SQL client
 function getSql() {
-  if (!process.env.POSTGRES_URL) {
-    throw new Error('POSTGRES_URL is not set');
+  // POSTGRES_URLが設定されている場合はそれを使用
+  if (process.env.POSTGRES_URL) {
+    return neon(process.env.POSTGRES_URL);
   }
-  return neon(process.env.POSTGRES_URL);
+
+  // Vercelストレージ統合の場合、Session Pooler URLを構築
+  // Session Poolerが必要（ポート6543）、NON_POOLINGは使えない
+  const postgresHost = process.env.POSTGRES_HOST;
+  const postgresUser = process.env.POSTGRES_USER;
+  const postgresPassword = process.env.POSTGRES_PASSWORD;
+  const postgresDatabase = process.env.POSTGRES_DATABASE;
+
+  if (postgresHost && postgresUser && postgresPassword && postgresDatabase) {
+    // ホストをSession Pooler用に変換
+    // 例: aws-1-ap-northeast-1.pooler.supabase.com に変換
+    const poolerHost = postgresHost.replace(
+      /^(aws-\d+-[a-z]+-[a-z]+-\d+)\.connect\.psdb\.cloud$/,
+      '$1.pooler.supabase.com'
+    ).replace(
+      /^db\.([a-zA-Z0-9]+)\.supabase\.co$/,
+      'aws-0-ap-northeast-1.pooler.supabase.com'
+    );
+
+    const connectionString = `postgresql://${postgresUser}:${encodeURIComponent(postgresPassword)}@${poolerHost}:6543/${postgresDatabase}?sslmode=require`;
+    return neon(connectionString);
+  }
+
+  throw new Error('POSTGRES_URL or Vercel Postgres environment variables are not set');
 }
 
 // データベース初期化
