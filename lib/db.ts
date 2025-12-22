@@ -1,10 +1,27 @@
-import { sql } from '@vercel/postgres';
+import { Pool } from 'pg';
 import { Tournament, Participant, TournamentData } from './types';
+
+// PostgreSQL接続プール
+let pool: Pool | null = null;
+
+function getPool(): Pool {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.POSTGRES_URL,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
+  }
+  return pool;
+}
 
 // データベース初期化
 export async function initDatabase() {
   try {
-    await sql`
+    const pool = getPool();
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS tournaments (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name TEXT NOT NULL,
@@ -16,13 +33,13 @@ export async function initDatabase() {
         tournament_data JSONB NOT NULL,
         participants JSONB NOT NULL
       )
-    `;
+    `);
 
     // インデックス作成
-    await sql`
+    await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_tournaments_created_at
       ON tournaments(created_at DESC)
-    `;
+    `);
 
     return { success: true };
   } catch (error) {
@@ -34,7 +51,9 @@ export async function initDatabase() {
 // 全トーナメント取得
 export async function getAllTournaments(): Promise<Tournament[]> {
   try {
-    const result = await sql<Tournament>`
+    const pool = getPool();
+
+    const result = await pool.query(`
       SELECT
         id::text,
         name,
@@ -47,7 +66,7 @@ export async function getAllTournaments(): Promise<Tournament[]> {
         participants
       FROM tournaments
       ORDER BY created_at DESC
-    `;
+    `);
 
     return result.rows;
   } catch (error) {
@@ -59,20 +78,25 @@ export async function getAllTournaments(): Promise<Tournament[]> {
 // ID でトーナメント取得
 export async function getTournamentById(id: string): Promise<Tournament | null> {
   try {
-    const result = await sql<Tournament>`
-      SELECT
-        id::text,
-        name,
-        created_at::text as "createdAt",
-        completed_at::text as "completedAt",
-        format,
-        total_participants as "totalParticipants",
-        winner_data as "winnerData",
-        tournament_data as "tournamentData",
-        participants
-      FROM tournaments
-      WHERE id = ${id}
-    `;
+    const pool = getPool();
+
+    const result = await pool.query(
+      `
+        SELECT
+          id::text,
+          name,
+          created_at::text as "createdAt",
+          completed_at::text as "completedAt",
+          format,
+          total_participants as "totalParticipants",
+          winner_data as "winnerData",
+          tournament_data as "tournamentData",
+          participants
+        FROM tournaments
+        WHERE id = $1
+      `,
+      [id]
+    );
 
     return result.rows[0] || null;
   } catch (error) {
@@ -88,32 +112,37 @@ export async function createTournament(
   tournamentData: TournamentData
 ): Promise<Tournament> {
   try {
-    const result = await sql<Tournament>`
-      INSERT INTO tournaments (
+    const pool = getPool();
+
+    const result = await pool.query(
+      `
+        INSERT INTO tournaments (
+          name,
+          format,
+          total_participants,
+          tournament_data,
+          participants
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING
+          id::text,
+          name,
+          created_at::text as "createdAt",
+          completed_at::text as "completedAt",
+          format,
+          total_participants as "totalParticipants",
+          winner_data as "winnerData",
+          tournament_data as "tournamentData",
+          participants
+      `,
+      [
         name,
-        format,
-        total_participants,
-        tournament_data,
-        participants
-      )
-      VALUES (
-        ${name},
-        ${tournamentData.format},
-        ${tournamentData.totalParticipants},
-        ${JSON.stringify(tournamentData)},
-        ${JSON.stringify(participants)}
-      )
-      RETURNING
-        id::text,
-        name,
-        created_at::text as "createdAt",
-        completed_at::text as "completedAt",
-        format,
-        total_participants as "totalParticipants",
-        winner_data as "winnerData",
-        tournament_data as "tournamentData",
-        participants
-    `;
+        tournamentData.format,
+        tournamentData.totalParticipants,
+        JSON.stringify(tournamentData),
+        JSON.stringify(participants),
+      ]
+    );
 
     return result.rows[0];
   } catch (error) {
@@ -129,47 +158,54 @@ export async function updateTournament(
   winnerData: Participant | null = null
 ): Promise<Tournament> {
   try {
+    const pool = getPool();
     let result;
 
     if (winnerData) {
       // 優勝者がいる場合、completed_atをNOW()に設定
-      result = await sql<Tournament>`
-        UPDATE tournaments
-        SET
-          tournament_data = ${JSON.stringify(tournamentData)},
-          winner_data = ${JSON.stringify(winnerData)},
-          completed_at = NOW()
-        WHERE id = ${id}
-        RETURNING
-          id::text,
-          name,
-          created_at::text as "createdAt",
-          completed_at::text as "completedAt",
-          format,
-          total_participants as "totalParticipants",
-          winner_data as "winnerData",
-          tournament_data as "tournamentData",
-          participants
-      `;
+      result = await pool.query(
+        `
+          UPDATE tournaments
+          SET
+            tournament_data = $1,
+            winner_data = $2,
+            completed_at = NOW()
+          WHERE id = $3
+          RETURNING
+            id::text,
+            name,
+            created_at::text as "createdAt",
+            completed_at::text as "completedAt",
+            format,
+            total_participants as "totalParticipants",
+            winner_data as "winnerData",
+            tournament_data as "tournamentData",
+            participants
+        `,
+        [JSON.stringify(tournamentData), JSON.stringify(winnerData), id]
+      );
     } else {
       // 優勝者がいない場合、completed_atはNULLのまま
-      result = await sql<Tournament>`
-        UPDATE tournaments
-        SET
-          tournament_data = ${JSON.stringify(tournamentData)},
-          winner_data = NULL
-        WHERE id = ${id}
-        RETURNING
-          id::text,
-          name,
-          created_at::text as "createdAt",
-          completed_at::text as "completedAt",
-          format,
-          total_participants as "totalParticipants",
-          winner_data as "winnerData",
-          tournament_data as "tournamentData",
-          participants
-      `;
+      result = await pool.query(
+        `
+          UPDATE tournaments
+          SET
+            tournament_data = $1,
+            winner_data = NULL
+          WHERE id = $2
+          RETURNING
+            id::text,
+            name,
+            created_at::text as "createdAt",
+            completed_at::text as "completedAt",
+            format,
+            total_participants as "totalParticipants",
+            winner_data as "winnerData",
+            tournament_data as "tournamentData",
+            participants
+        `,
+        [JSON.stringify(tournamentData), id]
+      );
     }
 
     return result.rows[0];
@@ -182,7 +218,8 @@ export async function updateTournament(
 // トーナメント削除
 export async function deleteTournament(id: string): Promise<void> {
   try {
-    await sql`DELETE FROM tournaments WHERE id = ${id}`;
+    const pool = getPool();
+    await pool.query('DELETE FROM tournaments WHERE id = $1', [id]);
   } catch (error) {
     console.error('Delete tournament error:', error);
     throw error;
