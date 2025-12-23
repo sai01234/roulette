@@ -96,7 +96,7 @@ export async function getAllTournaments(): Promise<Tournament[]> {
       ORDER BY created_at DESC
     `;
 
-    return result as Tournament[];
+    return result as unknown as Tournament[];
   } catch (error) {
     console.error('Get all tournaments error:', error);
     throw error;
@@ -123,7 +123,7 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
       WHERE id = ${id}
     `;
 
-    return result[0] as Tournament || null;
+    return (result[0] as unknown as Tournament) || null;
   } catch (error) {
     console.error('Get tournament by ID error:', error);
     throw error;
@@ -166,7 +166,7 @@ export async function createTournament(
         participants
     `;
 
-    return result[0] as Tournament;
+    return result[0] as unknown as Tournament;
   } catch (error) {
     console.error('Create tournament error:', error);
     throw error;
@@ -224,7 +224,7 @@ export async function updateTournament(
       `;
     }
 
-    return result[0] as Tournament;
+    return result[0] as unknown as Tournament;
   } catch (error) {
     console.error('Update tournament error:', error);
     throw error;
