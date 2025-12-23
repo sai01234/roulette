@@ -11,6 +11,7 @@ export async function GET() {
     // URLの構造を分析（パスワードは隠す）
     let urlAnalysis = {
       protocol: 'NOT_SET',
+      username: 'NOT_SET',
       hasPassword: false,
       host: 'NOT_SET',
       port: 'NOT_SET',
@@ -27,6 +28,7 @@ export async function GET() {
       if (urlMatch) {
         urlAnalysis = {
           protocol: urlMatch[1],
+          username: urlMatch[2],
           hasPassword: !!urlMatch[3],
           host: urlMatch[4],
           port: urlMatch[5],
