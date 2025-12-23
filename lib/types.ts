@@ -74,5 +74,6 @@ export interface Tournament {
 // セッションデータ
 export interface SessionData {
   isLoggedIn: boolean;
+  username?: string;
 }
 
