@@ -28,10 +28,19 @@ export default function DashboardPage() {
       }
 
       const data = await response.json();
-      setTournaments(data.tournaments || []);
+      console.log('API Response:', data); // デバッグログ
+
+      // データが配列であることを確認
+      if (Array.isArray(data.tournaments)) {
+        setTournaments(data.tournaments);
+      } else {
+        console.error('Invalid tournaments data:', data);
+        setTournaments([]);
+      }
     } catch (err) {
       setError('データの読み込みに失敗しました');
-      console.error(err);
+      console.error('Fetch error:', err);
+      setTournaments([]); // エラー時は空配列を設定
     } finally {
       setIsLoading(false);
     }
@@ -49,12 +58,18 @@ export default function DashboardPage() {
   };
 
   // 検索フィルタリング
-  const filteredTournaments = tournaments.filter(tournament =>
-    tournament.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTournaments = Array.isArray(tournaments)
+    ? tournaments.filter(tournament =>
+        tournament?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
-  const completedCount = tournaments.filter(t => t.completedAt !== null).length;
-  const ongoingCount = tournaments.length - completedCount;
+  const completedCount = Array.isArray(tournaments)
+    ? tournaments.filter(t => t?.completedAt !== null).length
+    : 0;
+  const ongoingCount = Array.isArray(tournaments)
+    ? tournaments.length - completedCount
+    : 0;
 
   return (
     <main className="min-h-screen cyber-grid-bg">
@@ -106,7 +121,7 @@ export default function DashboardPage() {
           <div className="panel p-6">
             <p className="text-sm text-gray-400 font-body mb-2">総トーナメント数</p>
             <p className="text-4xl font-display font-bold text-cyber-accent">
-              {tournaments.length}
+              {Array.isArray(tournaments) ? tournaments.length : 0}
             </p>
           </div>
 
