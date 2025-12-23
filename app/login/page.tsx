@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +19,7 @@ export default function LoginPage() {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ password }),
       });
 
       const data = await response.json();
@@ -89,27 +88,6 @@ export default function LoginPage() {
 
         {/* ログインフォーム */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="username" className="font-body text-sm text-gray-300 block mb-2">
-              ユーザー名
-            </label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="
-                w-full px-4 py-3 rounded-lg
-                bg-cyber-card border-2 border-cyber-accent/20
-                text-white font-body
-                focus:outline-none focus:border-cyber-accent
-                transition-colors
-              "
-              placeholder="ユーザー名を入力"
-              required
-            />
-          </div>
-
           <div>
             <label htmlFor="password" className="font-body text-sm text-gray-300 block mb-2">
               パスワード
