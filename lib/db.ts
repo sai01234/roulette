@@ -1,25 +1,28 @@
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 import { Tournament, Participant, TournamentData } from './types';
 
-// Neon serverless SQL client
+// PostgreSQL client instance (singleton)
+let sql: ReturnType<typeof postgres> | null = null;
+
+// Get PostgreSQL client
 function getSql() {
+  if (sql) return sql;
+
   // POSTGRES_URLが設定されている場合
   if (process.env.POSTGRES_URL) {
     let connectionString = process.env.POSTGRES_URL;
 
-    // postgres:// を postgresql:// に変換（Vercelストレージ統合の問題を修正）
+    // postgres:// を postgresql:// に変換
     if (connectionString.startsWith('postgres://') && !connectionString.startsWith('postgresql://')) {
       connectionString = connectionString.replace('postgres://', 'postgresql://');
     }
 
-    // Session Poolerが必要（ポート6543）、Direct connection（ポート5432）の場合は変換
+    // Session Poolerが必要（ポート6543）
     if (connectionString.includes(':5432/')) {
-      // ホストとポートをSession Pooler用に変換
       connectionString = connectionString
         .replace(/db\.([a-zA-Z0-9]+)\.supabase\.co:5432/, 'aws-1-ap-northeast-1.pooler.supabase.com:6543')
         .replace(/:5432\//, ':6543/');
 
-      // ユーザー名も変更（postgres → postgres.PROJECT_ID）
       const projectIdMatch = connectionString.match(/pooler\.supabase\.com/);
       if (projectIdMatch) {
         connectionString = connectionString.replace(
@@ -29,32 +32,16 @@ function getSql() {
       }
     }
 
-    return neon(connectionString);
+    sql = postgres(connectionString, {
+      max: 1, // Vercel serverlessでは接続プールを小さく
+      idle_timeout: 20,
+      connect_timeout: 10,
+    });
+
+    return sql;
   }
 
-  // Vercelストレージ統合の場合、Session Pooler URLを構築
-  // Session Poolerが必要（ポート6543）、NON_POOLINGは使えない
-  const postgresHost = process.env.POSTGRES_HOST;
-  const postgresUser = process.env.POSTGRES_USER;
-  const postgresPassword = process.env.POSTGRES_PASSWORD;
-  const postgresDatabase = process.env.POSTGRES_DATABASE;
-
-  if (postgresHost && postgresUser && postgresPassword && postgresDatabase) {
-    // ホストをSession Pooler用に変換
-    // 例: aws-1-ap-northeast-1.pooler.supabase.com に変換
-    const poolerHost = postgresHost.replace(
-      /^(aws-\d+-[a-z]+-[a-z]+-\d+)\.connect\.psdb\.cloud$/,
-      '$1.pooler.supabase.com'
-    ).replace(
-      /^db\.([a-zA-Z0-9]+)\.supabase\.co$/,
-      'aws-0-ap-northeast-1.pooler.supabase.com'
-    );
-
-    const connectionString = `postgresql://${postgresUser}:${encodeURIComponent(postgresPassword)}@${poolerHost}:6543/${postgresDatabase}?sslmode=require`;
-    return neon(connectionString);
-  }
-
-  throw new Error('POSTGRES_URL or Vercel Postgres environment variables are not set');
+  throw new Error('POSTGRES_URL is not set');
 }
 
 // データベース初期化

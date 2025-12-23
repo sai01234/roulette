@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,7 +63,18 @@ export async function GET() {
 
     if (hasPostgresUrl) {
       try {
-        const sql = neon(process.env.POSTGRES_URL!);
+        let connectionString = process.env.POSTGRES_URL!;
+
+        // postgres:// を postgresql:// に変換
+        if (connectionString.startsWith('postgres://') && !connectionString.startsWith('postgresql://')) {
+          connectionString = connectionString.replace('postgres://', 'postgresql://');
+        }
+
+        const sql = postgres(connectionString, {
+          max: 1,
+          idle_timeout: 20,
+          connect_timeout: 10,
+        });
 
         // 簡単なクエリでデータベース接続をテスト
         const result = await sql`SELECT NOW() as current_time`;
@@ -78,6 +89,8 @@ export async function GET() {
           ) as exists
         `;
         tableExists = tableCheck[0]?.exists || false;
+
+        await sql.end();
       } catch (error: any) {
         dbConnectionTest = 'FAILED';
         errorDetails = {
