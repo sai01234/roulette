@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { getTournamentById, updateTournament } from '@/lib/db';
+import { getTournamentById, updateTournament, deleteTournament } from '@/lib/db';
 import { TournamentData, Participant } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -76,6 +76,34 @@ export async function PUT(
     console.error('Update tournament error:', error);
     return NextResponse.json(
       { error: 'トーナメントの更新に失敗しました' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - トーナメント削除
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // 認証チェック
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+    await deleteTournament(id);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Delete tournament error:', error);
+    return NextResponse.json(
+      { error: 'トーナメントの削除に失敗しました' },
       { status: 500 }
     );
   }

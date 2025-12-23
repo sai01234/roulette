@@ -2,13 +2,18 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useState } from 'react';
 import { Tournament } from '@/lib/types';
 
 interface TournamentCardProps {
   tournament: Tournament;
+  onDelete?: () => void;
 }
 
-export default function TournamentCard({ tournament }: TournamentCardProps) {
+export default function TournamentCard({ tournament, onDelete }: TournamentCardProps) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const isCompleted = tournament.completedAt !== null;
   const createdDate = new Date(tournament.createdAt).toLocaleDateString('ja-JP', {
     year: 'numeric',
@@ -24,39 +29,147 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
       })
     : null;
 
-  return (
-    <Link href={`/tournament/${tournament.id}`}>
-      <motion.div
-        whileHover={{ scale: 1.02, y: -4 }}
-        whileTap={{ scale: 0.98 }}
-        className="
-          panel p-6 cursor-pointer
-          border-2 border-transparent
-          hover:border-cyber-accent/50
-          transition-all duration-300
-          h-full
-        "
-      >
-        {/* ステータスバッジ */}
-        <div className="flex items-center justify-between mb-4">
-          <span
-            className={`
-              px-3 py-1 rounded-full text-xs font-display font-bold
-              ${
-                isCompleted
-                  ? 'bg-green-500/20 border border-green-500/50 text-green-300'
-                  : 'bg-yellow-500/20 border border-yellow-500/50 text-yellow-300'
-              }
-            `}
-          >
-            {isCompleted ? '完了' : '進行中'}
-          </span>
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-          {/* トーナメント形式 */}
-          <span className="text-xs text-gray-500 font-body">
-            {tournament.format === '3way' ? '3人対戦' : '1対1'}
-          </span>
-        </div>
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/tournaments/${tournament.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('削除に失敗しました');
+      }
+
+      // 親コンポーネントに削除を通知
+      if (onDelete) {
+        onDelete();
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('トーナメントの削除に失敗しました');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowDeleteConfirm(true);
+  };
+
+  const handleCancelDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowDeleteConfirm(false);
+  };
+
+  return (
+    <div className="relative">
+      {/* 削除確認ダイアログ */}
+      {showDeleteConfirm && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 rounded-lg"
+          onClick={handleCancelDelete}
+        >
+          <div
+            className="panel p-6 max-w-sm mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-display text-xl font-bold text-white mb-3">
+              削除確認
+            </h3>
+            <p className="font-body text-gray-300 mb-6">
+              「{tournament.name}」を削除しますか？<br />
+              この操作は取り消せません。
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancelDelete}
+                className="
+                  flex-1 px-4 py-2 rounded-lg font-body
+                  bg-cyber-card border border-gray-600
+                  text-gray-300 hover:text-white
+                  transition-colors
+                "
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="
+                  flex-1 px-4 py-2 rounded-lg font-body font-bold
+                  bg-red-500 hover:bg-red-600
+                  text-white
+                  transition-colors
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                "
+              >
+                {isDeleting ? '削除中...' : '削除'}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      <Link href={`/tournament/${tournament.id}`}>
+        <motion.div
+          whileHover={{ scale: 1.02, y: -4 }}
+          whileTap={{ scale: 0.98 }}
+          className="
+            panel p-6 cursor-pointer
+            border-2 border-transparent
+            hover:border-cyber-accent/50
+            transition-all duration-300
+            h-full
+          "
+        >
+          {/* 削除ボタン */}
+          <button
+            onClick={handleDeleteClick}
+            className="
+              absolute top-4 right-4 z-10
+              w-8 h-8 rounded-lg
+              bg-red-500/20 border border-red-500/50
+              hover:bg-red-500/30 hover:border-red-500
+              text-red-400 hover:text-red-300
+              transition-all
+              flex items-center justify-center
+            "
+            title="削除"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+
+          {/* ステータスバッジ */}
+          <div className="flex items-center justify-between mb-4">
+            <span
+              className={`
+                px-3 py-1 rounded-full text-xs font-display font-bold
+                ${
+                  isCompleted
+                    ? 'bg-green-500/20 border border-green-500/50 text-green-300'
+                    : 'bg-yellow-500/20 border border-yellow-500/50 text-yellow-300'
+                }
+              `}
+            >
+              {isCompleted ? '完了' : '進行中'}
+            </span>
+
+            {/* トーナメント形式 */}
+            <span className="text-xs text-gray-500 font-body">
+              {tournament.format === '3way' ? '3人対戦' : '1対1'}
+            </span>
+          </div>
 
         {/* トーナメント名 */}
         <h3 className="font-display text-2xl font-bold mb-3">
@@ -116,7 +229,8 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </div>
-      </motion.div>
-    </Link>
+        </motion.div>
+      </Link>
+    </div>
   );
 }

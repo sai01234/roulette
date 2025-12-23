@@ -271,7 +271,10 @@ export default function DashboardPage() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <TournamentCard tournament={tournament} />
+                  <TournamentCard
+                    tournament={tournament}
+                    onDelete={fetchTournaments}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
