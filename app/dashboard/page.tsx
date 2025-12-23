@@ -81,12 +81,10 @@ export default function DashboardPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <h1 className="font-display text-2xl md:text-3xl font-bold">
-                <span className="bg-gradient-to-r from-cyber-accent via-cyber-purple to-cyber-accent2 bg-clip-text text-transparent">
-                  トーナメント管理
-                </span>
+              <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+                トーナメント管理
               </h1>
-              <p className="font-body text-sm text-gray-400 mt-1">
+              <p className="font-body text-sm text-gray-500 mt-1">
                 モデレーターバトロワルーレット
               </p>
             </motion.div>
@@ -119,22 +117,22 @@ export default function DashboardPage() {
           className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
         >
           <div className="panel p-6">
-            <p className="text-sm text-gray-400 font-body mb-2">総トーナメント数</p>
-            <p className="text-4xl font-display font-bold text-cyber-accent">
+            <p className="text-sm text-gray-500 font-body mb-2">総トーナメント数</p>
+            <p className="text-4xl font-display font-bold text-white">
               {Array.isArray(tournaments) ? tournaments.length : 0}
             </p>
           </div>
 
           <div className="panel p-6">
-            <p className="text-sm text-gray-400 font-body mb-2">進行中</p>
-            <p className="text-4xl font-display font-bold text-yellow-400">
+            <p className="text-sm text-gray-500 font-body mb-2">進行中</p>
+            <p className="text-4xl font-display font-bold text-cyber-accent-light">
               {ongoingCount}
             </p>
           </div>
 
           <div className="panel p-6">
-            <p className="text-sm text-gray-400 font-body mb-2">完了</p>
-            <p className="text-4xl font-display font-bold text-green-400">
+            <p className="text-sm text-gray-500 font-body mb-2">完了</p>
+            <p className="text-4xl font-display font-bold text-gray-400">
               {completedCount}
             </p>
           </div>
@@ -171,8 +169,7 @@ export default function DashboardPage() {
             onClick={() => router.push('/tournament/new')}
             className="
               px-6 py-3 rounded-lg font-display font-bold
-              bg-gradient-to-r from-cyber-accent to-cyber-accent2
-              hover:from-cyber-accent/90 hover:to-cyber-accent2/90
+              bg-cyber-accent hover:bg-cyber-accent-dark
               text-white shadow-lg shadow-cyber-accent/20
               transition-all
             "
@@ -199,17 +196,12 @@ export default function DashboardPage() {
                   cx="50"
                   cy="50"
                   r="40"
-                  stroke="url(#spinner-gradient)"
+                  stroke="#6366f1"
                   strokeWidth="8"
                   strokeLinecap="round"
                   strokeDasharray="60 200"
+                  opacity="0.8"
                 />
-                <defs>
-                  <linearGradient id="spinner-gradient">
-                    <stop offset="0%" stopColor="#ff3366" />
-                    <stop offset="100%" stopColor="#00ffcc" />
-                  </linearGradient>
-                </defs>
               </svg>
             </motion.div>
             <p className="font-body text-gray-400">読み込み中...</p>

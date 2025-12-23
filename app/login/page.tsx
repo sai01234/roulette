@@ -55,33 +55,21 @@ export default function LoginPage() {
             className="w-20 h-20 mx-auto mb-4"
           >
             <svg viewBox="0 0 100 100" fill="none">
-              <circle cx="50" cy="50" r="45" stroke="url(#cyber-gradient)" strokeWidth="5" />
-              <circle cx="50" cy="50" r="30" fill="url(#cyber-gradient2)" opacity="0.3" />
+              <circle cx="50" cy="50" r="45" stroke="#6366f1" strokeWidth="5" opacity="0.6" />
+              <circle cx="50" cy="50" r="30" fill="#6366f1" opacity="0.2" />
               <path
                 d="M50 20 L50 80 M20 50 L80 50"
-                stroke="url(#cyber-gradient)"
+                stroke="#818cf8"
                 strokeWidth="3"
                 strokeLinecap="round"
               />
-              <defs>
-                <linearGradient id="cyber-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#ff3366" />
-                  <stop offset="100%" stopColor="#00ffcc" />
-                </linearGradient>
-                <linearGradient id="cyber-gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#9333ea" />
-                  <stop offset="100%" stopColor="#3b82f6" />
-                </linearGradient>
-              </defs>
             </svg>
           </motion.div>
 
-          <h1 className="font-display text-3xl font-bold mb-2">
-            <span className="bg-gradient-to-r from-cyber-accent via-cyber-purple to-cyber-accent2 bg-clip-text text-transparent">
-              管理者ログイン
-            </span>
+          <h1 className="font-display text-3xl font-bold mb-2 text-white">
+            管理者ログイン
           </h1>
-          <p className="font-body text-gray-400 text-sm">
+          <p className="font-body text-gray-500 text-sm">
             モデレーターバトロワルーレット
           </p>
         </div>
@@ -142,8 +130,7 @@ export default function LoginPage() {
             disabled={isLoading}
             className="
               w-full py-3 rounded-lg font-display text-lg font-bold
-              bg-gradient-to-r from-cyber-accent to-cyber-accent2
-              hover:from-cyber-accent/90 hover:to-cyber-accent2/90
+              bg-cyber-accent hover:bg-cyber-accent-dark
               text-white
               transition-all transform hover:scale-[1.02]
               disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none

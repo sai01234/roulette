@@ -11,11 +11,10 @@ module.exports = {
         'cyber': {
           'bg': '#0a0a1a',
           'card': '#12122a',
-          'accent': '#ff3366',
-          'accent2': '#00ffcc',
-          'gold': '#ffd700',
-          'purple': '#9333ea',
-          'blue': '#3b82f6',
+          'accent': '#6366f1', // 統一されたインディゴ
+          'accent-light': '#818cf8',
+          'accent-dark': '#4f46e5',
+          'gold': '#fbbf24', // より落ち着いたゴールド
         }
       },
       fontFamily: {
