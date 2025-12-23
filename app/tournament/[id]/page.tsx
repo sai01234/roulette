@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Participant, TournamentData, Match, Tournament } from '@/lib/types';
 import {
@@ -13,9 +13,11 @@ import TournamentBracket from '@/components/TournamentBracket';
 import RouletteOverlay from '@/components/RouletteOverlay';
 import WinnerCelebration from '@/components/WinnerCelebration';
 
-export default function TournamentPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
+export default function TournamentPage() {
+  const params = useParams();
   const router = useRouter();
+  const id = params?.id as string;
+
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
@@ -24,13 +26,15 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
 
   // トーナメント取得
   useEffect(() => {
-    fetchTournament();
-  }, [resolvedParams.id]);
+    if (id) {
+      fetchTournament();
+    }
+  }, [id]);
 
   const fetchTournament = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/tournaments/${resolvedParams.id}`);
+      const response = await fetch(`/api/tournaments/${id}`);
 
       if (!response.ok) {
         throw new Error('トーナメントの取得に失敗しました');
@@ -57,7 +61,7 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
     winnerData: Participant | null = null
   ) => {
     try {
-      const response = await fetch(`/api/tournaments/${resolvedParams.id}`, {
+      const response = await fetch(`/api/tournaments/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
