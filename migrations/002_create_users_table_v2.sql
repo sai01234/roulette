@@ -28,10 +28,9 @@ COMMENT ON COLUMN users.created_at IS 'アカウント作成日時';
 
 -- 初期ユーザーを追加
 INSERT INTO users (username, password_hash)
-VALUES (
-  '7/si',
-  crypt('Nanasiya7', gen_salt('bf'))
-);
+VALUES
+  ('7/si', crypt('Nanasiya7', gen_salt('bf'))),
+  ('admin', crypt('admin123', gen_salt('bf')));
 
 -- 確認用クエリ（実行結果を表示）
 SELECT
@@ -39,4 +38,5 @@ SELECT
   username,
   created_at,
   '*** パスワードは暗号化されています ***' as password_status
-FROM users;
+FROM users
+ORDER BY created_at;
