@@ -7,12 +7,33 @@ export async function GET() {
   try {
     // 環境変数チェック
     const hasPostgresUrl = !!process.env.POSTGRES_URL;
-    const originalUrl = process.env.POSTGRES_URL?.substring(0, 50) || 'NOT_SET';
+
+    // URLの構造を分析（パスワードは隠す）
+    let urlAnalysis = {
+      protocol: 'NOT_SET',
+      hasPassword: false,
+      host: 'NOT_SET',
+      port: 'NOT_SET',
+      database: 'NOT_SET',
+    };
 
     // 変換後の接続文字列を取得
     let transformedUrl = 'NOT_TRANSFORMED';
     if (process.env.POSTGRES_URL) {
       let connectionString = process.env.POSTGRES_URL;
+
+      // 元のURLを解析
+      const urlMatch = connectionString.match(/^(postgres(?:ql)?):\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)$/);
+      if (urlMatch) {
+        urlAnalysis = {
+          protocol: urlMatch[1],
+          hasPassword: !!urlMatch[3],
+          host: urlMatch[4],
+          port: urlMatch[5],
+          database: urlMatch[6],
+        };
+      }
+
       if (connectionString.startsWith('postgres://') && !connectionString.startsWith('postgresql://')) {
         connectionString = connectionString.replace('postgres://', 'postgresql://');
       }
@@ -28,7 +49,9 @@ export async function GET() {
           );
         }
       }
-      transformedUrl = connectionString.substring(0, 70);
+
+      // 変換後のURLを解析（パスワード部分は隠す）
+      transformedUrl = connectionString.replace(/(:)([^@]+)(@)/, '$1***$3');
     }
 
     // データベース接続テスト
@@ -66,7 +89,7 @@ export async function GET() {
     return NextResponse.json({
       environment: {
         hasPostgresUrl,
-        originalUrl,
+        urlAnalysis,
         transformedUrl,
       },
       database: {
