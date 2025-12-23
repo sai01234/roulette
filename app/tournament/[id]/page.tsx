@@ -198,6 +198,18 @@ export default function TournamentPage() {
     );
   }
 
+  // ローディング中またはデータがない場合
+  if (isLoading || !tournament) {
+    return (
+      <main className="min-h-screen cyber-grid-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-cyber-accent"></div>
+          <p className="mt-4 text-gray-400 font-body">読み込み中...</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen cyber-grid-bg">
       {/* ヘッダー */}
@@ -312,7 +324,7 @@ export default function TournamentPage() {
                 <div className="px-4 py-2 rounded-lg bg-cyber-card border border-cyber-accent/20">
                   <span className="text-xs text-gray-400 font-body block">ラウンド数</span>
                   <span className="font-display text-xl text-cyber-accent2">
-                    {tournament.tournamentData.rounds.length}
+                    {tournament.tournamentData?.rounds?.length || 0}
                   </span>
                 </div>
                 <div className="px-4 py-2 rounded-lg bg-cyber-card border border-cyber-accent/20">
