@@ -96,7 +96,13 @@ export async function getAllTournaments(): Promise<Tournament[]> {
       ORDER BY created_at DESC
     `;
 
-    return result as unknown as Tournament[];
+    // JSONBデータを確実にパース
+    return result.map(row => ({
+      ...row,
+      winnerData: typeof row.winnerData === 'string' ? JSON.parse(row.winnerData) : row.winnerData,
+      tournamentData: typeof row.tournamentData === 'string' ? JSON.parse(row.tournamentData) : row.tournamentData,
+      participants: typeof row.participants === 'string' ? JSON.parse(row.participants) : row.participants,
+    })) as unknown as Tournament[];
   } catch (error) {
     console.error('Get all tournaments error:', error);
     throw error;
@@ -123,7 +129,16 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
       WHERE id = ${id}
     `;
 
-    return (result[0] as unknown as Tournament) || null;
+    if (!result[0]) return null;
+
+    const row = result[0];
+    // JSONBデータを確実にパース
+    return {
+      ...row,
+      winnerData: typeof row.winnerData === 'string' ? JSON.parse(row.winnerData) : row.winnerData,
+      tournamentData: typeof row.tournamentData === 'string' ? JSON.parse(row.tournamentData) : row.tournamentData,
+      participants: typeof row.participants === 'string' ? JSON.parse(row.participants) : row.participants,
+    } as unknown as Tournament;
   } catch (error) {
     console.error('Get tournament by ID error:', error);
     throw error;
@@ -166,7 +181,14 @@ export async function createTournament(
         participants
     `;
 
-    return result[0] as unknown as Tournament;
+    const row = result[0];
+    // JSONBデータを確実にパース
+    return {
+      ...row,
+      winnerData: typeof row.winnerData === 'string' ? JSON.parse(row.winnerData) : row.winnerData,
+      tournamentData: typeof row.tournamentData === 'string' ? JSON.parse(row.tournamentData) : row.tournamentData,
+      participants: typeof row.participants === 'string' ? JSON.parse(row.participants) : row.participants,
+    } as unknown as Tournament;
   } catch (error) {
     console.error('Create tournament error:', error);
     throw error;
@@ -224,7 +246,14 @@ export async function updateTournament(
       `;
     }
 
-    return result[0] as unknown as Tournament;
+    const row = result[0];
+    // JSONBデータを確実にパース
+    return {
+      ...row,
+      winnerData: typeof row.winnerData === 'string' ? JSON.parse(row.winnerData) : row.winnerData,
+      tournamentData: typeof row.tournamentData === 'string' ? JSON.parse(row.tournamentData) : row.tournamentData,
+      participants: typeof row.participants === 'string' ? JSON.parse(row.participants) : row.participants,
+    } as unknown as Tournament;
   } catch (error) {
     console.error('Update tournament error:', error);
     throw error;
