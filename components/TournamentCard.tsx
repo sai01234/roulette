@@ -77,7 +77,7 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
           <div className="bg-cyber-card/50 rounded-lg p-3">
             <p className="text-xs text-gray-400 font-body mb-1">ラウンド数</p>
             <p className="font-display text-xl text-cyber-accent2">
-              {tournament.tournamentData.rounds.length}
+              {tournament.tournamentData?.rounds?.length || 0}
             </p>
           </div>
         </div>
@@ -96,10 +96,10 @@ export default function TournamentCard({ tournament }: TournamentCardProps) {
               <p className="text-xs text-gray-400 font-body">チャンピオン</p>
             </div>
             <p className="font-display text-lg font-bold text-cyber-gold">
-              {tournament.winnerData.name}
+              {tournament.winnerData?.name || '不明'}
             </p>
             <p className="text-xs text-gray-400 font-body">
-              最終枠数: {tournament.winnerData.frames}
+              最終枠数: {tournament.winnerData?.frames || 0}
             </p>
           </div>
         )}
