@@ -5,7 +5,12 @@ export const metadata: Metadata = {
   title: '最強管理者権限争奪戦 - モデレーターバトロワルーレット',
   description: '参加者の「枠数」に基づいた確率的なルーレット対戦で、公平で楽しいトーナメント形式のイベントを運営',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/favicon.svg', sizes: '180x180', type: 'image/svg+xml' },
+    ],
   },
 };
 
