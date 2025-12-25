@@ -52,7 +52,7 @@ export default function LoginPage() {
             initial={{ rotate: 0 }}
             animate={{ rotate: 360 }}
             transition={{ duration: 3, ease: 'linear', repeat: Infinity }}
-            className="w-32 h-32 mx-auto mb-4"
+            className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden"
             style={{ opacity: 1 }}
           >
             <img
