@@ -270,3 +270,136 @@ export async function deleteTournament(id: string): Promise<void> {
     throw error;
   }
 }
+
+// 最近のトーナメント取得（直近N件）
+export async function getRecentTournaments(limit: number = 5): Promise<Tournament[]> {
+  try {
+    const sql = getSql();
+
+    const result = await sql`
+      SELECT
+        id::text,
+        name,
+        created_at::text as "createdAt",
+        completed_at::text as "completedAt",
+        format,
+        total_participants as "totalParticipants",
+        winner_data as "winnerData",
+        tournament_data as "tournamentData",
+        participants
+      FROM tournaments
+      ORDER BY created_at DESC
+      LIMIT ${limit}
+    `;
+
+    return result.map(row => ({
+      ...row,
+      winnerData: typeof row.winnerData === 'string' ? JSON.parse(row.winnerData) : row.winnerData,
+      tournamentData: typeof row.tournamentData === 'string' ? JSON.parse(row.tournamentData) : row.tournamentData,
+      participants: typeof row.participants === 'string' ? JSON.parse(row.participants) : row.participants,
+    })) as unknown as Tournament[];
+  } catch (error) {
+    console.error('Get recent tournaments error:', error);
+    throw error;
+  }
+}
+
+// 今月のトーナメント取得
+export async function getCurrentMonthTournaments(): Promise<Tournament[]> {
+  try {
+    const sql = getSql();
+
+    const result = await sql`
+      SELECT
+        id::text,
+        name,
+        created_at::text as "createdAt",
+        completed_at::text as "completedAt",
+        format,
+        total_participants as "totalParticipants",
+        winner_data as "winnerData",
+        tournament_data as "tournamentData",
+        participants
+      FROM tournaments
+      WHERE created_at >= date_trunc('month', CURRENT_DATE)
+      ORDER BY created_at DESC
+    `;
+
+    return result.map(row => ({
+      ...row,
+      winnerData: typeof row.winnerData === 'string' ? JSON.parse(row.winnerData) : row.winnerData,
+      tournamentData: typeof row.tournamentData === 'string' ? JSON.parse(row.tournamentData) : row.tournamentData,
+      participants: typeof row.participants === 'string' ? JSON.parse(row.participants) : row.participants,
+    })) as unknown as Tournament[];
+  } catch (error) {
+    console.error('Get current month tournaments error:', error);
+    throw error;
+  }
+}
+
+// 先月のトーナメント取得
+export async function getLastMonthTournaments(): Promise<Tournament[]> {
+  try {
+    const sql = getSql();
+
+    const result = await sql`
+      SELECT
+        id::text,
+        name,
+        created_at::text as "createdAt",
+        completed_at::text as "completedAt",
+        format,
+        total_participants as "totalParticipants",
+        winner_data as "winnerData",
+        tournament_data as "tournamentData",
+        participants
+      FROM tournaments
+      WHERE created_at >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
+        AND created_at < date_trunc('month', CURRENT_DATE)
+      ORDER BY created_at DESC
+    `;
+
+    return result.map(row => ({
+      ...row,
+      winnerData: typeof row.winnerData === 'string' ? JSON.parse(row.winnerData) : row.winnerData,
+      tournamentData: typeof row.tournamentData === 'string' ? JSON.parse(row.tournamentData) : row.tournamentData,
+      participants: typeof row.participants === 'string' ? JSON.parse(row.participants) : row.participants,
+    })) as unknown as Tournament[];
+  } catch (error) {
+    console.error('Get last month tournaments error:', error);
+    throw error;
+  }
+}
+
+// 進行中のトーナメント取得
+export async function getOngoingTournaments(): Promise<Tournament[]> {
+  try {
+    const sql = getSql();
+
+    const result = await sql`
+      SELECT
+        id::text,
+        name,
+        created_at::text as "createdAt",
+        completed_at::text as "completedAt",
+        format,
+        total_participants as "totalParticipants",
+        winner_data as "winnerData",
+        tournament_data as "tournamentData",
+        participants
+      FROM tournaments
+      WHERE completed_at IS NULL
+      ORDER BY created_at DESC
+    `;
+
+    return result.map(row => ({
+      ...row,
+      winnerData: typeof row.winnerData === 'string' ? JSON.parse(row.winnerData) : row.winnerData,
+      tournamentData: typeof row.tournamentData === 'string' ? JSON.parse(row.tournamentData) : row.tournamentData,
+      participants: typeof row.participants === 'string' ? JSON.parse(row.participants) : row.participants,
+    })) as unknown as Tournament[];
+  } catch (error) {
+    console.error('Get ongoing tournaments error:', error);
+    throw error;
+  }
+}

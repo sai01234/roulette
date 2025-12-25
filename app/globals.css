@@ -162,3 +162,48 @@ body {
   border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 }
 
+/* モバイル最適化 */
+@media (hover: none) and (pointer: coarse) {
+  /* タッチデバイスでのタップハイライト除去 */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* タッチターゲットサイズの最小値を保証 */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* モバイルでのテキスト選択を最適化 */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}
+
+/* モバイルビューポート対応 */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safariのビューポート調整 */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* PWA用のセーフエリア対応 */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+

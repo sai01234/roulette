@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import AudioInitializer from '@/components/AudioInitializer';
+import InstallPWAPrompt from '@/components/InstallPWAPrompt';
 
 export const metadata: Metadata = {
   title: '最強管理者権限争奪戦 - モデレーターバトロワルーレット',
@@ -12,6 +13,19 @@ export const metadata: Metadata = {
     apple: [
       { url: '/icon.jpg', sizes: '180x180', type: 'image/jpeg' },
     ],
+  },
+  manifest: '/manifest.json',
+  themeColor: '#6366f1',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: '管理者争奪戦',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
   },
 };
 
@@ -32,6 +46,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-cyber-bg text-white antialiased">
         <AudioInitializer />
+        <InstallPWAPrompt />
         {children}
       </body>
     </html>
