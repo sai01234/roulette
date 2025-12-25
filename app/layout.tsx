@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   description: '参加者の「枠数」に基づいた確率的なルーレット対戦で、公平で楽しいトーナメント形式のイベントを運営',
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon.jpg', type: 'image/jpeg' },
     ],
     apple: [
-      { url: '/favicon.svg', sizes: '180x180', type: 'image/svg+xml' },
+      { url: '/icon.jpg', sizes: '180x180', type: 'image/jpeg' },
     ],
   },
 };
