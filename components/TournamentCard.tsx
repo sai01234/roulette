@@ -131,44 +131,47 @@ export default function TournamentCard({ tournament, onDelete }: TournamentCardP
             h-full
           "
         >
-          {/* 削除ボタン */}
-          <button
-            onClick={handleDeleteClick}
-            className="
-              absolute top-4 right-4 z-10
-              w-8 h-8 rounded-lg
-              bg-red-500/20 border border-red-500/50
-              hover:bg-red-500/30 hover:border-red-500
-              text-red-400 hover:text-red-300
-              transition-all
-              flex items-center justify-center
-            "
-            title="削除"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-
-          {/* ステータスバッジ */}
+          {/* ステータスバッジと削除ボタン */}
           <div className="flex items-center justify-between mb-4">
-            <span
-              className={`
-                px-3 py-1 rounded-full text-xs font-body
-                ${
-                  isCompleted
-                    ? 'bg-gray-700/50 border border-gray-600 text-gray-400'
-                    : 'bg-cyber-accent/10 border border-cyber-accent/30 text-cyber-accent-light'
-                }
-              `}
+            {/* 削除ボタン（左側） */}
+            <button
+              onClick={handleDeleteClick}
+              className="
+                w-7 h-7 rounded-lg
+                bg-red-500/20 border border-red-500/50
+                hover:bg-red-500/30 hover:border-red-500
+                text-red-400 hover:text-red-300
+                transition-all
+                flex items-center justify-center
+                flex-shrink-0
+              "
+              title="削除"
             >
-              {isCompleted ? '完了' : '進行中'}
-            </span>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
 
-            {/* トーナメント形式 */}
-            <span className="text-xs text-gray-500 font-body">
-              {tournament.format === '3way' ? '3人対戦' : '1対1'}
-            </span>
+            {/* ステータスとフォーマット */}
+            <div className="flex items-center gap-2 flex-1 justify-end">
+              <span
+                className={`
+                  px-3 py-1 rounded-full text-xs font-body
+                  ${
+                    isCompleted
+                      ? 'bg-gray-700/50 border border-gray-600 text-gray-400'
+                      : 'bg-cyber-accent/10 border border-cyber-accent/30 text-cyber-accent-light'
+                  }
+                `}
+              >
+                {isCompleted ? '完了' : '進行中'}
+              </span>
+
+              {/* トーナメント形式 */}
+              <span className="text-xs text-gray-500 font-body">
+                {tournament.format === '3way' ? '3人対戦' : '1対1'}
+              </span>
+            </div>
           </div>
 
         {/* トーナメント名 */}

@@ -11,40 +11,42 @@ interface WinnerCelebrationProps {
 
 // 紙吹雪のパーティクル
 const Confetti = ({ delay }: { delay: number }) => {
-  const colors = ['#6366f1', '#818cf8', '#fbbf24', '#f59e0b', '#60a5fa'];
+  const colors = ['#6366f1', '#818cf8', '#fbbf24', '#f59e0b', '#60a5fa', '#a78bfa'];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
-  const randomX = -10 + Math.random() * 120; // -10vw to 110vw for better spread
-  const randomSwing = -30 + Math.random() * 60; // Horizontal swing
-  const randomDuration = 2.5 + Math.random() * 2.5;
+  const randomStartX = Math.random() * 100; // 0-100vw均等分布
+  const randomSwing = -40 + Math.random() * 80; // より大きな横揺れ
+  const randomDuration = 3 + Math.random() * 3;
   const randomRotation = Math.random() * 360;
-  const randomSize = 3 + Math.random() * 5; // 3-8px
+  const randomSize = 4 + Math.random() * 6; // 4-10px
+  const randomStartY = -100 - Math.random() * 50; // より高い位置から開始
 
   return (
     <motion.div
       initial={{
-        x: `${randomX}vw`,
-        y: -20,
+        x: `${randomStartX}vw`,
+        y: randomStartY,
         rotate: randomRotation,
         opacity: 1,
         scale: 1
       }}
       animate={{
-        x: `${randomX + randomSwing}vw`, // Add horizontal movement
+        x: `${randomStartX + randomSwing}vw`,
         y: '110vh',
-        rotate: randomRotation + 720 + Math.random() * 360,
-        opacity: 0,
-        scale: 0.5
+        rotate: randomRotation + 1080,
+        opacity: [1, 1, 0.8, 0],
+        scale: [1, 1.2, 0.8, 0.4]
       }}
       transition={{
         duration: randomDuration,
         delay,
-        ease: 'easeInOut'
+        ease: 'linear'
       }}
-      className="fixed rounded-sm pointer-events-none z-50"
+      className="fixed pointer-events-none z-50"
       style={{
         backgroundColor: randomColor,
         width: `${randomSize}px`,
-        height: `${randomSize}px`
+        height: `${randomSize}px`,
+        borderRadius: Math.random() > 0.5 ? '50%' : '2px'
       }}
     />
   );
