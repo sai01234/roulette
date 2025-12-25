@@ -81,12 +81,13 @@ export default function WinnerCelebration({ winner, onClose }: WinnerCelebration
         <motion.div
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ 
-            type: 'spring', 
-            damping: 15, 
+          transition={{
+            type: 'spring',
+            damping: 15,
             stiffness: 100,
             delay: 0.2
           }}
+          onClick={(e) => e.stopPropagation()}
           className="relative z-10 text-center p-12"
         >
           {/* 光のエフェクト */}
@@ -163,8 +164,8 @@ export default function WinnerCelebration({ winner, onClose }: WinnerCelebration
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClose}
-            className="mt-8 px-8 py-3 rounded-lg bg-gradient-to-r from-cyber-gold to-yellow-500 
-              text-black font-display text-lg shadow-lg shadow-cyber-gold/30"
+            className="relative z-20 mt-8 px-8 py-3 rounded-lg bg-gradient-to-r from-cyber-gold to-yellow-500
+              text-black font-display text-lg font-bold shadow-lg shadow-cyber-gold/30 cursor-pointer"
           >
             閉じる
           </motion.button>
