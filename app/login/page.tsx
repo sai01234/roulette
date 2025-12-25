@@ -53,11 +53,13 @@ export default function LoginPage() {
             animate={{ rotate: 360 }}
             transition={{ duration: 3, ease: 'linear', repeat: Infinity }}
             className="w-32 h-32 mx-auto mb-4"
+            style={{ opacity: 1 }}
           >
             <img
               src="/icon.jpg"
               alt="Admin Battle Royale"
-              className="w-full h-full object-contain rounded-full"
+              className="w-full h-full object-cover"
+              style={{ opacity: 1 }}
             />
           </motion.div>
 
