@@ -5,18 +5,9 @@ import { Participant, TournamentData } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
-// GET - 全トーナメント取得
+// GET - 全トーナメント取得（公開API - 認証不要）
 export async function GET() {
   try {
-    // 認証チェック
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
-    }
-
     // データベース初期化（テーブルがない場合）
     await initDatabase();
 
