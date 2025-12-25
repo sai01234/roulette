@@ -9,11 +9,17 @@ export function generateShareText(tournament: Tournament): string {
   const participantCount = tournament.totalParticipants;
   const frames = tournament.winnerData?.frames || 0;
 
+  // 公開URLを生成（ブラウザのベースURLを使用）
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const publicUrl = `${baseUrl}/public/tournament/${tournament.id}`;
+
   return `${tournament.name}と勝利者と今月一杯最強くんのモデレーターお願いします！
 
 🏆 チャンピオン: ${winnerName}
 📊 参加者数: ${participantCount}名
 🎯 最終枠数: ${frames}
+
+結果を見る👉 ${publicUrl}
 
 #管理権限争奪戦 #モデレーターバトルロワイヤル`;
 }

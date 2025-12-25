@@ -7,8 +7,8 @@ import { sessionOptions } from './lib/auth';
 // 保護されたルート
 const protectedRoutes = ['/dashboard', '/tournament'];
 
-// 公開ルート
-const publicRoutes = ['/login'];
+// 公開ルート（認証不要）
+const publicRoutes = ['/login', '/public'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -22,6 +22,11 @@ export async function middleware(request: NextRequest) {
   );
 
   const isAuthenticated = session.isLoggedIn === true;
+
+  // 公開ルートかどうか確認
+  const isPublicRoute = publicRoutes.some(route =>
+    pathname.startsWith(route)
+  );
 
   // 保護されたルートへのアクセス
   const isProtectedRoute = protectedRoutes.some(route =>
