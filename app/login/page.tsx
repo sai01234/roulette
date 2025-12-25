@@ -51,19 +51,14 @@ export default function LoginPage() {
           <motion.div
             initial={{ rotate: 0 }}
             animate={{ rotate: 360 }}
-            transition={{ duration: 2, ease: 'easeInOut' }}
-            className="w-20 h-20 mx-auto mb-4"
+            transition={{ duration: 3, ease: 'linear', repeat: Infinity }}
+            className="w-32 h-32 mx-auto mb-4"
           >
-            <svg viewBox="0 0 100 100" fill="none">
-              <circle cx="50" cy="50" r="45" stroke="#6366f1" strokeWidth="5" opacity="0.6" />
-              <circle cx="50" cy="50" r="30" fill="#6366f1" opacity="0.2" />
-              <path
-                d="M50 20 L50 80 M20 50 L80 50"
-                stroke="#818cf8"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-            </svg>
+            <img
+              src="/icon.jpg"
+              alt="Admin Battle Royale"
+              className="w-full h-full object-contain rounded-full"
+            />
           </motion.div>
 
           <h1 className="font-display text-3xl font-bold mb-2 text-white">
