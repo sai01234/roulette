@@ -28,7 +28,7 @@ export default function PublicTournamentsPage() {
       const data = await response.json();
       if (Array.isArray(data.tournaments)) {
         // 完了済みのトーナメントのみ表示
-        setTournaments(data.tournaments.filter(t => t.completedAt !== null));
+        setTournaments(data.tournaments.filter((t: Tournament) => t.completedAt !== null));
       } else {
         setTournaments([]);
       }
@@ -40,7 +40,7 @@ export default function PublicTournamentsPage() {
     }
   };
 
-  const filteredTournaments = tournaments.filter(tournament =>
+  const filteredTournaments = tournaments.filter((tournament: Tournament) =>
     tournament?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
