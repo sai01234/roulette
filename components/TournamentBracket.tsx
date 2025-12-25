@@ -39,12 +39,17 @@ export default function TournamentBracket({
   };
 
   const handleMatchClick = (match: Match) => {
-    if (match.status === 'ready') {
-      if (match.participants.length === 1) {
-        onSeedAdvance(match);
-      } else {
-        onMatchClick(match);
-      }
+    // 完了済みの試合はクリックできない
+    if (match.status === 'completed') {
+      return;
+    }
+
+    // 参加者が1人の場合は自動進出処理
+    if (match.participants.length === 1) {
+      onSeedAdvance(match);
+    } else if (match.status === 'ready') {
+      // 通常の対戦
+      onMatchClick(match);
     }
   };
 
