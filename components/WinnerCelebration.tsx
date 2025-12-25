@@ -10,15 +10,19 @@ interface WinnerCelebrationProps {
 }
 
 // 紙吹雪のパーティクル
-const Confetti = ({ delay }: { delay: number }) => {
+const Confetti = ({ delay, index }: { delay: number; index: number }) => {
   const colors = ['#6366f1', '#818cf8', '#fbbf24', '#f59e0b', '#60a5fa', '#a78bfa'];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
-  const randomStartX = Math.random() * 100; // 0-100vw均等分布
-  const randomSwing = -40 + Math.random() * 80; // より大きな横揺れ
+
+  // 画面を均等に分割して配置
+  const section = (index % 10) * 10; // 0, 10, 20, 30...90
+  const randomStartX = section + Math.random() * 10; // 各セクション内でランダム
+
+  const randomSwing = -20 + Math.random() * 40; // 中心からの揺れ
   const randomDuration = 3 + Math.random() * 3;
   const randomRotation = Math.random() * 360;
-  const randomSize = 4 + Math.random() * 6; // 4-10px
-  const randomStartY = -100 - Math.random() * 50; // より高い位置から開始
+  const randomSize = 4 + Math.random() * 6;
+  const randomStartY = -150 - Math.random() * 100; // さらに高い位置から
 
   return (
     <motion.div
@@ -78,7 +82,7 @@ export default function WinnerCelebration({ winner, onClose }: WinnerCelebration
       >
         {/* 紙吹雪 */}
         {confetti.map((delay, i) => (
-          <Confetti key={i} delay={delay} />
+          <Confetti key={i} delay={delay} index={i} />
         ))}
 
         {/* 背景オーバーレイ */}
