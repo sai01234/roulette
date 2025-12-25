@@ -66,14 +66,14 @@ export default function CSVImport({ onImport, disabled }: CSVImportProps) {
       <motion.button
         onClick={() => fileInputRef.current?.click()}
         disabled={disabled || isProcessing}
-        className="w-full relative overflow-hidden rounded-lg px-6 py-4 font-display text-lg font-bold 
-          bg-gradient-to-r from-cyber-accent to-cyber-purple text-white
+        className="w-full rounded-lg px-6 py-4 font-display text-lg font-bold
+          bg-cyber-accent hover:bg-cyber-accent-dark text-white
           disabled:opacity-50 disabled:cursor-not-allowed
-          shadow-lg shadow-cyber-accent/30"
+          shadow-lg shadow-cyber-accent/30 transition-colors"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        <span className="relative z-10 flex items-center justify-center gap-3">
+        <span className="flex items-center justify-center gap-3">
           {isProcessing ? (
             <>
               <motion.div
@@ -86,20 +86,13 @@ export default function CSVImport({ onImport, disabled }: CSVImportProps) {
           ) : (
             <>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               参加者を追加（CSV）
             </>
           )}
         </span>
-        
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-cyber-purple to-cyber-accent"
-          initial={{ x: '-100%' }}
-          whileHover={{ x: 0 }}
-          transition={{ duration: 0.3 }}
-        />
       </motion.button>
 
       <AnimatePresence>
