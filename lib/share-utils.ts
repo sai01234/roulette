@@ -5,6 +5,7 @@ import { Tournament } from './types';
  * トーナメント情報からX/Twitter共有用のテキストを生成
  */
 export function generateShareText(tournament: Tournament): string {
+  const tournamentName = tournament.name;
   const winnerName = tournament.winnerData?.name || '不明';
   const participantCount = tournament.totalParticipants;
   const frames = tournament.winnerData?.frames || 0;
@@ -13,7 +14,10 @@ export function generateShareText(tournament: Tournament): string {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   const publicUrl = `${baseUrl}/public/tournament/${tournament.id}`;
 
-  return `${tournament.name}と勝利者と今月一杯最強くんのモデレーターお願いします！
+  return `「${tournamentName}」の勝利者は「${winnerName}」となりました！！！
+1ヶ月間、最強くんのモデレーターお願いします！
+
+おめでとう！
 
 🏆 チャンピオン: ${winnerName}
 📊 参加者数: ${participantCount}名
@@ -21,7 +25,7 @@ export function generateShareText(tournament: Tournament): string {
 
 結果を見る👉 ${publicUrl}
 
-#管理権限争奪戦 #モデレーターバトルロワイヤル`;
+#管理権限争奪戦 #モデレーターバトロワルーレット`;
 }
 
 /**
