@@ -165,17 +165,12 @@ export default function TournamentPage() {
               cx="50"
               cy="50"
               r="40"
-              stroke="url(#spinner-gradient)"
+              stroke="#6366f1"
               strokeWidth="8"
               strokeLinecap="round"
               strokeDasharray="60 200"
+              opacity="0.8"
             />
-            <defs>
-              <linearGradient id="spinner-gradient">
-                <stop offset="0%" stopColor="#ff3366" />
-                <stop offset="100%" stopColor="#00ffcc" />
-              </linearGradient>
-            </defs>
           </svg>
         </motion.div>
       </main>
@@ -237,17 +232,15 @@ export default function TournamentPage() {
               <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="font-display text-2xl md:text-4xl font-bold"
+                className="font-display text-2xl md:text-4xl font-bold text-white"
               >
-                <span className="bg-gradient-to-r from-cyber-accent via-cyber-purple to-cyber-accent2 bg-clip-text text-transparent">
-                  {tournament.name}
-                </span>
+                {tournament.name}
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="font-body text-sm text-gray-400 mt-1"
+                className="font-body text-sm text-gray-500 mt-1"
               >
                 最強管理者権限争奪戦
               </motion.p>

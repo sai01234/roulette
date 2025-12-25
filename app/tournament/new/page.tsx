@@ -104,12 +104,10 @@ export default function NewTournamentPage() {
             </motion.button>
 
             <div>
-              <h1 className="font-display text-2xl md:text-3xl font-bold">
-                <span className="bg-gradient-to-r from-cyber-accent via-cyber-purple to-cyber-accent2 bg-clip-text text-transparent">
-                  新規トーナメント作成
-                </span>
+              <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+                新規トーナメント作成
               </h1>
-              <p className="font-body text-sm text-gray-400 mt-1">
+              <p className="font-body text-sm text-gray-500 mt-1">
                 トーナメント名を入力し、参加者をインポートしてください
               </p>
             </div>
@@ -254,8 +252,7 @@ export default function NewTournamentPage() {
             disabled={isCreating || participants.length === 0 || !tournamentName.trim()}
             className="
               w-full py-4 rounded-lg font-display text-lg font-bold
-              bg-gradient-to-r from-cyber-accent to-cyber-accent2
-              hover:from-cyber-accent/90 hover:to-cyber-accent2/90
+              bg-cyber-accent hover:bg-cyber-accent-dark
               text-white shadow-lg shadow-cyber-accent/20
               transition-all
               disabled:opacity-50 disabled:cursor-not-allowed
