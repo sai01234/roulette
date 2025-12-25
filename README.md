@@ -28,6 +28,29 @@
 - 統計情報（総数、進行中、完了済み）
 - チャンピオン情報の表示
 
+### 📈 統計・分析
+- **全体統計**: トーナメント総数、参加者数、対戦数の集計
+- **時系列グラフ**: トーナメント数と参加者数の推移を可視化
+- **ランキング**:
+  - 優勝回数ランキング
+  - 勝率ランキング（3試合以上）
+  - 総獲得枠数ランキング
+  - 平均枠数ランキング（2大会以上）
+- **インタラクティブグラフ**: Rechartsによる見やすいデータ可視化
+
+### 📤 エクスポート・共有
+- **スクリーンショット**: トーナメントブラケットをPNG形式で保存
+- **X/Twitter共有**: カスタムメッセージでツイート
+  - 自動テキストコピー機能
+  - ワンクリックでX投稿画面を開く
+- **クリップボードコピー**: 共有テキストを簡単にコピー
+
+### 🔊 効果音システム
+- **ルーレット回転音**: 対戦開始時の臨場感あふれる効果音
+- **勝利音**: 優勝者決定時のファンファーレ
+- **音声ON/OFF切り替え**: ヘッダーのトグルボタンで簡単切り替え
+- **設定永続化**: LocalStorageで音声設定を記憶
+
 ## 🚀 セットアップ
 
 ### 前提条件
@@ -65,7 +88,18 @@ SESSION_SECRET=your_session_secret_at_least_32_characters_long
 - Postgresデータベースを作成（Vercelダッシュボードから）
 - 環境変数を取得: `vercel env pull .env.local`
 
-5. **開発サーバーの起動**
+5. **効果音ファイルの準備（オプション）**
+効果音機能を使用する場合、以下のファイルを準備:
+- `public/sounds/roulette-spin.mp3` (5秒程度) - ルーレット回転音
+- `public/sounds/victory.mp3` (2-3秒) - 勝利音
+
+推奨サイト:
+- [効果音ラボ](https://soundeffect-lab.info/)
+- [DOVA-SYNDROME](https://dova-s.jp/)
+
+詳細は `public/sounds/README.md` を参照してください。
+
+6. **開発サーバーの起動**
 ```bash
 npm run dev
 ```
@@ -133,6 +167,16 @@ vercel --prod
 - 各トーナメントのチャンピオン情報を確認
 - 検索機能で特定のトーナメントを素早く検索
 
+### 4. 統計の確認
+1. ダッシュボードで「統計を見る」ボタンをクリック
+2. 全体統計、時系列グラフ、ランキングを閲覧
+3. データが蓄積されるほど詳細な分析が可能に
+
+### 5. 共有・エクスポート
+1. トーナメント完了後、優勝者画面で「共有する」をクリック
+2. スクリーンショット保存、X共有、テキストコピーから選択
+3. X共有時はテキストが自動的にクリップボードにコピーされます
+
 ## 🛠 技術スタック
 
 - **フレームワーク**: Next.js 14 (App Router)
@@ -141,6 +185,8 @@ vercel --prod
 - **アニメーション**: Framer Motion
 - **データベース**: Vercel Postgres (PostgreSQL)
 - **認証**: iron-session
+- **グラフ**: Recharts
+- **画像処理**: html-to-image
 - **デプロイ**: Vercel
 
 ## 📁 ファイル構成
@@ -153,10 +199,14 @@ vercel --prod
 │   │   │   ├── login/
 │   │   │   ├── logout/
 │   │   │   └── session/
+│   │   ├── stats/          # 統計API
+│   │   │   ├── overview/
+│   │   │   └── participants/
 │   │   └── tournaments/    # トーナメントAPI
 │   │       ├── route.ts
 │   │       └── [id]/
 │   ├── dashboard/          # ダッシュボードページ
+│   │   └── stats/          # 統計ページ
 │   ├── login/              # ログインページ
 │   ├── tournament/
 │   │   ├── new/            # 新規トーナメント作成
@@ -165,18 +215,34 @@ vercel --prod
 │   ├── page.tsx            # ルートページ（リダイレクト）
 │   └── globals.css         # グローバルスタイル
 ├── components/
+│   ├── stats/              # 統計コンポーネント
+│   │   ├── OverviewCard.tsx
+│   │   ├── RankingTable.tsx
+│   │   └── TournamentChart.tsx
+│   ├── AudioInitializer.tsx
 │   ├── CSVImport.tsx
 │   ├── ParticipantPanel.tsx
+│   ├── ShareMenu.tsx
+│   ├── SoundToggle.tsx
 │   ├── TournamentBracket.tsx
 │   ├── TournamentCard.tsx
 │   ├── RouletteOverlay.tsx
 │   └── WinnerCelebration.tsx
 ├── lib/
+│   ├── audio-manager.ts    # 効果音管理
 │   ├── auth.ts             # 認証ヘルパー
 │   ├── db.ts               # データベース接続
+│   ├── share-utils.ts      # 共有機能
+│   ├── stats-calculator.ts # 統計計算
 │   ├── types.ts            # TypeScript型定義
 │   ├── csv-processor.ts    # CSV処理
 │   └── tournament-manager.ts # トーナメント管理ロジック
+├── public/
+│   ├── sounds/             # 効果音ファイル
+│   │   ├── README.md       # 効果音取得ガイド
+│   │   ├── roulette-spin.mp3
+│   │   └── victory.mp3
+│   └── icon.jpg            # アプリアイコン
 ├── middleware.ts           # 認証ミドルウェア
 ├── .env.example            # 環境変数テンプレート
 ├── package.json
