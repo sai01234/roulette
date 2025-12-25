@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Participant } from '@/lib/types';
+import { Participant, Tournament } from '@/lib/types';
+import ShareMenu from './ShareMenu';
+import { audioManager } from '@/lib/audio-manager';
 
 interface WinnerCelebrationProps {
   winner: Participant;
+  tournament?: Tournament;
   onClose: () => void;
 }
 
@@ -56,10 +59,14 @@ const Confetti = ({ delay, index }: { delay: number; index: number }) => {
   );
 };
 
-export default function WinnerCelebration({ winner, onClose }: WinnerCelebrationProps) {
+export default function WinnerCelebration({ winner, tournament, onClose }: WinnerCelebrationProps) {
   const [confetti, setConfetti] = useState<number[]>([]);
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
   useEffect(() => {
+    // 勝利音を再生
+    audioManager.play('victory', 0.7);
+
     // 紙吹雪を生成（より多く、より派手に）
     const particles: number[] = [];
     for (let i = 0; i < 150; i++) {
@@ -172,19 +179,63 @@ export default function WinnerCelebration({ winner, onClose }: WinnerCelebration
             🎊 最強管理者権限獲得 🎊
           </motion.p>
 
-          {/* 閉じるボタン */}
-          <motion.button
+          {/* 共有・閉じるボタン */}
+          <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 1.1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onClose}
-            className="relative z-20 mt-8 px-8 py-3 rounded-lg bg-gradient-to-r from-cyber-gold to-yellow-500
-              text-black font-display text-lg font-bold shadow-lg shadow-cyber-gold/30 cursor-pointer"
+            className="relative z-20 mt-8 flex flex-col gap-4 items-center"
           >
-            閉じる
-          </motion.button>
+            {/* 共有ボタン（トーナメント情報がある場合のみ） */}
+            {tournament && !showShareMenu && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowShareMenu(true)}
+                className="
+                  px-8 py-3 rounded-lg
+                  bg-cyber-accent hover:bg-cyber-accent-dark
+                  text-white font-display text-lg font-bold
+                  shadow-lg shadow-cyber-accent/30 cursor-pointer
+                  transition-colors
+                "
+              >
+                共有する
+              </motion.button>
+            )}
+
+            {/* 共有メニュー */}
+            {tournament && showShareMenu && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+              >
+                <ShareMenu
+                  tournament={tournament}
+                  onClose={() => setShowShareMenu(false)}
+                />
+              </motion.div>
+            )}
+
+            {/* 閉じるボタン */}
+            {!showShareMenu && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onClose}
+                className="
+                  px-8 py-3 rounded-lg
+                  bg-cyber-gold hover:bg-yellow-500
+                  text-black font-display text-lg font-bold
+                  shadow-lg shadow-cyber-gold/30 cursor-pointer
+                  transition-colors
+                "
+              >
+                閉じる
+              </motion.button>
+            )}
+          </motion.div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

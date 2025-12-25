@@ -12,6 +12,7 @@ import ParticipantPanel from '@/components/ParticipantPanel';
 import TournamentBracket from '@/components/TournamentBracket';
 import RouletteOverlay from '@/components/RouletteOverlay';
 import WinnerCelebration from '@/components/WinnerCelebration';
+import SoundToggle from '@/components/SoundToggle';
 
 export default function TournamentPage() {
   const params = useParams();
@@ -245,6 +246,15 @@ export default function TournamentPage() {
                 最強管理者権限争奪戦
               </motion.p>
             </div>
+
+            {/* 音声トグル */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <SoundToggle />
+            </motion.div>
           </div>
         </div>
       </header>
@@ -329,11 +339,13 @@ export default function TournamentPage() {
               </div>
 
               {/* トーナメントブラケット */}
-              <TournamentBracket
-                tournamentData={tournament.tournamentData}
-                onMatchClick={handleMatchClick}
-                onSeedAdvance={handleSeedAdvance}
-              />
+              <div id="tournament-bracket">
+                <TournamentBracket
+                  tournamentData={tournament.tournamentData}
+                  onMatchClick={handleMatchClick}
+                  onSeedAdvance={handleSeedAdvance}
+                />
+              </div>
             </div>
           </motion.section>
         </div>
@@ -364,6 +376,7 @@ export default function TournamentPage() {
         {showWinner && tournament.winnerData && (
           <WinnerCelebration
             winner={tournament.winnerData}
+            tournament={tournament}
             onClose={() => setShowWinner(false)}
           />
         )}

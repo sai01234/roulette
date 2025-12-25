@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import AudioInitializer from '@/components/AudioInitializer';
 
 export const metadata: Metadata = {
   title: '最強管理者権限争奪戦 - モデレーターバトロワルーレット',
@@ -30,6 +31,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-cyber-bg text-white antialiased">
+        <AudioInitializer />
         {children}
       </body>
     </html>

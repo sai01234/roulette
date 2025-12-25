@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Match, Participant } from '@/lib/types';
 import { determineWinner, calculateWinProbabilities } from '@/lib/tournament-manager';
+import { audioManager } from '@/lib/audio-manager';
 
 interface RouletteOverlayProps {
   match: Match;
@@ -71,7 +72,10 @@ export default function RouletteOverlay({ match, onConfirmWinner, onCancel }: Ro
   // ルーレット開始
   const startRoulette = useCallback(() => {
     setPhase('spinning');
-    
+
+    // 効果音を再生
+    audioManager.play('roulette-spin', 0.5);
+
     // 勝者を決定
     const selectedWinner = determineWinner(match.participants);
     setWinner(selectedWinner);
