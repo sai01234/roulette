@@ -11,31 +11,41 @@ interface WinnerCelebrationProps {
 
 // 紙吹雪のパーティクル
 const Confetti = ({ delay }: { delay: number }) => {
-  const colors = ['#ff3366', '#00ffcc', '#ffd700', '#9333ea', '#3b82f6'];
+  const colors = ['#6366f1', '#818cf8', '#fbbf24', '#f59e0b', '#60a5fa'];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
-  const randomX = Math.random() * 100;
-  const randomDuration = 2 + Math.random() * 2;
+  const randomX = -10 + Math.random() * 120; // -10vw to 110vw for better spread
+  const randomSwing = -30 + Math.random() * 60; // Horizontal swing
+  const randomDuration = 2.5 + Math.random() * 2.5;
+  const randomRotation = Math.random() * 360;
+  const randomSize = 3 + Math.random() * 5; // 3-8px
 
   return (
     <motion.div
-      initial={{ 
-        x: `${randomX}vw`, 
-        y: -20, 
-        rotate: 0,
-        opacity: 1 
+      initial={{
+        x: `${randomX}vw`,
+        y: -20,
+        rotate: randomRotation,
+        opacity: 1,
+        scale: 1
       }}
-      animate={{ 
-        y: '110vh', 
-        rotate: 720,
-        opacity: 0 
+      animate={{
+        x: `${randomX + randomSwing}vw`, // Add horizontal movement
+        y: '110vh',
+        rotate: randomRotation + 720 + Math.random() * 360,
+        opacity: 0,
+        scale: 0.5
       }}
-      transition={{ 
-        duration: randomDuration, 
+      transition={{
+        duration: randomDuration,
         delay,
-        ease: 'linear'
+        ease: 'easeInOut'
       }}
-      className="fixed w-3 h-3 rounded-sm pointer-events-none z-50"
-      style={{ backgroundColor: randomColor }}
+      className="fixed rounded-sm pointer-events-none z-50"
+      style={{
+        backgroundColor: randomColor,
+        width: `${randomSize}px`,
+        height: `${randomSize}px`
+      }}
     />
   );
 };
@@ -44,10 +54,10 @@ export default function WinnerCelebration({ winner, onClose }: WinnerCelebration
   const [confetti, setConfetti] = useState<number[]>([]);
 
   useEffect(() => {
-    // 紙吹雪を生成
+    // 紙吹雪を生成（より多く、より派手に）
     const particles: number[] = [];
-    for (let i = 0; i < 50; i++) {
-      particles.push(i * 0.1);
+    for (let i = 0; i < 150; i++) {
+      particles.push(i * 0.05);
     }
     setConfetti(particles);
 
