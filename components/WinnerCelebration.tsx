@@ -14,28 +14,27 @@ const Confetti = ({ delay, index }: { delay: number; index: number }) => {
   const colors = ['#6366f1', '#818cf8', '#fbbf24', '#f59e0b', '#60a5fa', '#a78bfa'];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
-  // 画面を均等に分割して配置
-  const section = (index % 10) * 10; // 0, 10, 20, 30...90
-  const randomStartX = section + Math.random() * 10; // 各セクション内でランダム
+  // 画面幅を完全に均等分割
+  const totalParticles = 150;
+  const startX = (index / totalParticles) * 100; // 0から100まで均等分布
+  const endX = startX + (-30 + Math.random() * 60); // 左右に揺れる
 
-  const randomSwing = -20 + Math.random() * 40; // 中心からの揺れ
   const randomDuration = 3 + Math.random() * 3;
   const randomRotation = Math.random() * 360;
   const randomSize = 4 + Math.random() * 6;
-  const randomStartY = -150 - Math.random() * 100; // さらに高い位置から
 
   return (
     <motion.div
       initial={{
-        x: `${randomStartX}vw`,
-        y: randomStartY,
+        left: `${startX}%`,
+        top: -100,
         rotate: randomRotation,
         opacity: 1,
         scale: 1
       }}
       animate={{
-        x: `${randomStartX + randomSwing}vw`,
-        y: '110vh',
+        left: `${endX}%`,
+        top: '110%',
         rotate: randomRotation + 1080,
         opacity: [1, 1, 0.8, 0],
         scale: [1, 1.2, 0.8, 0.4]
@@ -50,7 +49,8 @@ const Confetti = ({ delay, index }: { delay: number; index: number }) => {
         backgroundColor: randomColor,
         width: `${randomSize}px`,
         height: `${randomSize}px`,
-        borderRadius: Math.random() > 0.5 ? '50%' : '2px'
+        borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+        transform: 'translate(-50%, -50%)'
       }}
     />
   );
