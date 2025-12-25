@@ -7,9 +7,10 @@ interface ParticipantPanelProps {
   participants: Participant[];
   onReset: () => void;
   hasStarted: boolean;
+  showReset?: boolean; // リセットボタンを表示するか（デフォルト: true）
 }
 
-export default function ParticipantPanel({ participants, onReset, hasStarted }: ParticipantPanelProps) {
+export default function ParticipantPanel({ participants, onReset, hasStarted, showReset = true }: ParticipantPanelProps) {
   const totalFrames = participants.reduce((sum, p) => sum + p.frames, 0);
 
   return (
@@ -109,7 +110,7 @@ export default function ParticipantPanel({ participants, onReset, hasStarted }: 
       </div>
 
       {/* リセットボタン */}
-      {(participants.length > 0 || hasStarted) && (
+      {showReset && (participants.length > 0 || hasStarted) && (
         <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

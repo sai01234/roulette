@@ -148,10 +148,36 @@ export default function TournamentPage() {
     setSelectedMatch(null);
   }, []);
 
-  // リセット処理（使用しない）
-  const handleReset = useCallback(() => {
-    alert('トーナメントのリセットはダッシュボードから新しいトーナメントを作成してください');
-  }, []);
+  // リセット処理
+  const handleReset = useCallback(async () => {
+    if (!tournament) return;
+
+    const confirmed = window.confirm(
+      `「${tournament.name}」を削除してもよろしいですか？\n\nこの操作は取り消せません。`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`/api/tournaments/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('トーナメントの削除に失敗しました');
+      }
+
+      showNotification('success', 'トーナメントを削除しました');
+
+      // ダッシュボードに戻る
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1000);
+    } catch (error) {
+      console.error('Delete tournament error:', error);
+      showNotification('error', 'トーナメントの削除に失敗しました');
+    }
+  }, [tournament, id, router, showNotification]);
 
   if (isLoading) {
     return (

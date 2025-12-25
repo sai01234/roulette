@@ -157,6 +157,7 @@ export default function PublicTournamentPage() {
                 participants={tournament.participants}
                 onReset={() => {}}
                 hasStarted={true}
+                showReset={false}
               />
             </div>
           </motion.aside>
